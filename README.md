@@ -3,3 +3,4 @@
 testing
 weiqi testing
 Cy testing
+ka testing
