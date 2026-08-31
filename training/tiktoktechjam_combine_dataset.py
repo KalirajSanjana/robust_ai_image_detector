@@ -179,8 +179,7 @@ for epoch in range(num_epochs):
             cifake_total += labels.size(0)
     cifake_accuracy = (cifake_correct / cifake_total)
 
-        
-        ## what about model accuracy?
+
     print(
         f"Epoch {epoch + 1}/{num_epochs} | "
         f"Training Loss: {average_loss:.4f} | "
