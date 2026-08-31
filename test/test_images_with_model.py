@@ -9,7 +9,6 @@ from PIL import Image
 
 def run_inference(image_folder, output_json):
 
-    # 1. Set up device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     print(f"Using device: {device}")
@@ -17,11 +16,9 @@ def run_inference(image_folder, output_json):
     if torch.cuda.is_available():
         print(f"GPU: {torch.cuda.get_device_name(0)}")
 
-    # 2. Initialize the exact same ResNet18 architecture
     model = resnet18(weights=None)
     model.fc = nn.Linear(model.fc.in_features, 2)
 
-    # 3. Load your trained model
     model.load_state_dict(
         torch.load(
             r"\resnet18_1000perclass_20epochs_combinedataset_with_50_transform.pth",
@@ -32,11 +29,9 @@ def run_inference(image_folder, output_json):
     model.to(device)
     model.eval()
 
-    # 4. Use the EXACT same preprocessing as training
     weights = ResNet18_Weights.DEFAULT
     transform = weights.transforms()
 
-    # 5. Class mapping from your training code
     class_names = {
         0: "REAL",
         1: "AI"
@@ -52,7 +47,6 @@ def run_inference(image_folder, output_json):
         ".webp"
     )
 
-    # 6. Process all images in the folder
     with torch.no_grad():
 
         for filename in os.listdir(image_folder):
@@ -108,7 +102,6 @@ def run_inference(image_folder, output_json):
             except Exception as e:
                 print(f"Error processing {filename}: {e}")
 
-    # 7. Save results
     with open(output_json, "w") as f:
         json.dump(results, f, indent=4)
 
