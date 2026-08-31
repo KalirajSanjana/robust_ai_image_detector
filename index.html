@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Image Detector</title>
+<style>
+:root{--ink:#11121d;--muted:#6c7893;--top:#ccd0cf;--g1:#9ba8ab;--g2:#4a5c6a;--g3:#253745;--ai:#f47d83;--real:#73ec7c}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#1d1d1d;color:var(--ink)}
+.app{max-width:1440px;margin:auto;min-height:100vh;background:linear-gradient(155deg,var(--g1),var(--g2) 58%,var(--g3));overflow:hidden}
+.topbar{
+    height:92px;
+    background:#ccd0cf;
+    display:flex;
+    align-items:center;
+    padding:0 clamp(28px,10vw,175px);
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+.brand{
+    width:80px;
+    height:50px;
+    border:none;
+    border-radius:14px;
+    background:transparent;
+    padding:0;
+    overflow:hidden;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.brand img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center 55%;
+    display:block;
+}
+.nav{display:flex;gap:33px;font-size:14px;font-weight:600}.nav a{color:var(--muted);text-decoration:none}.profile{margin-left:auto;color:var(--muted)}
+.section{min-height:calc(100vh - 92px);padding:72px clamp(28px,10vw,175px)}
+.hero{display:flex;align-items:center}.hero h1{font-size:clamp(54px,6vw,86px);line-height:.96;letter-spacing:-4px;margin:0 0 36px}.hero p{max-width:540px;line-height:1.45;margin-bottom:44px}
+.primary{border:0;background:#11121d;color:#fff;height:48px;padding:0 38px;border-radius:999px;font-weight:700;cursor:pointer}.primary:disabled{opacity:.45;cursor:not-allowed}
+.upload-section{display:flex;flex-direction:column;align-items:center;justify-content:center}.panel{width:min(760px,92vw);border-radius:28px;overflow:hidden;background:#fff}
+.panel-head{height:72px;display:flex;align-items:center;justify-content:center;position:relative}.tabs{width:212px;height:34px;border-radius:999px;background:#f0f2f5;padding:2px;display:flex}
+.tab{flex:1;border:0;border-radius:999px;background:transparent;font-size:11px;font-weight:700}.tab.active{background:#080808;color:#fff}
+.settings{position:absolute;right:19px;width:36px;height:36px;border-radius:50%;border:1px solid #e4e7ea;background:#fff}
+.panel-body{padding:32px;background:#f9fbfd}.dropzone{min-height:360px;border:2px dashed #dfe4e8;border-radius:25px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8a909a;text-align:center;cursor:pointer;padding:24px}.dropzone.drag{background:#f3f7fa;border-color:#9eb8d2}
+.summary{display:none;margin-top:14px;text-align:center;color:#5f6975;font-size:13px}.detect-wrap{margin-top:48px}.msg{margin-top:16px;min-height:18px;color:#fbe1e1;font-size:13px;text-align:center}
+.loading{position:fixed;display:none;z-index:50;left:50%;top:50%;transform:translate(-50%,-50%);width:min(610px,86vw);height:360px;background:#fff;border-radius:34px;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 25px 70px #0004}.loading.show{display:flex}.track{width:min(400px,70%);height:36px;padding:6px;border-radius:999px;border:1px solid #d5d8dd;background:#f3f3f3}.bar{height:100%;width:12%;border-radius:999px;background:#39a2ff;animation:p 1.5s ease-in-out infinite}@keyframes p{0%{width:12%}50%{width:62%}100%{width:92%}}.loading b{font-size:24px;margin-top:20px}
+.results{display:none}.results.show{display:block}.grid{max-width:1180px;margin:auto;display:flex;flex-direction:column;gap:28px}.row{display:grid;grid-template-columns:1fr 240px;gap:12px}.info{background:#fff;border-radius:25px;min-height:150px;padding:38px 66px;display:flex;flex-direction:column;justify-content:center}.name,.conf{font-size:21px;font-weight:800}.name{margin-bottom:12px}.verdict{border-radius:24px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:22px;font-weight:800;padding:20px}.ai{background:var(--ai);color:#7d2629}.real{background:var(--real);color:#17642b}.actions{max-width:1180px;margin:30px auto;display:flex;justify-content:flex-end}.download{border:0;background:#4c6274;color:#fff;padding:12px 22px;border-radius:999px;font-weight:700}.another{text-align:center;margin-top:48px}
+#folderInput{display:none}
+@media(max-width:800px){.divider,.nav{display:none}.topbar{padding:0 20px}.section{padding-left:28px;padding-right:28px}.row{grid-template-columns:1fr}.info{padding:30px}.verdict{min-height:100px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar">
+<button class="brand" onclick="home()" aria-label="Home"><img src="logo.jpg" alt="AI Detector Logo"></button><div class="divider"></div>
+<nav class="nav"><a href="#home">Home</a><a href="#upload">Discover</a></nav>
+<div class="profile">♙</div>
+</header>
+
+<section class="section hero" id="home">
+<div><h1>Is This<br>AI Generated?</h1><p>Upload a folder of images and run your trained detector to classify each image as real or AI-generated, together with a confidence score.</p><button class="primary" onclick="document.querySelector('#upload').scrollIntoView({behavior:'smooth'})">Try Now !</button></div>
+</section>
+
+<section class="section upload-section" id="upload">
+<div class="panel">
+<div class="panel-head">
+<div class="tabs"><button class="tab active" id="newTab" onclick="newUpload()">New Upload</button><button class="tab" id="recentTab" onclick="recent()">Recent</button></div>
+<button class="settings">☷</button>
+</div>
+<div class="panel-body">
+<input id="folderInput" type="file" webkitdirectory directory multiple accept="image/*">
+<div class="dropzone" id="dropzone"><strong id="dropTitle">Click to browse or</strong><small id="dropSub">drag and drop your folder/files</small></div>
+<div class="summary" id="summary"></div>
+</div></div>
+<div class="detect-wrap"><button class="primary" id="detectBtn" disabled>Detect Now !</button></div>
+<div class="msg" id="msg"></div>
+</section>
+
+<section class="section results" id="results">
+<div class="grid" id="grid"></div>
+<div class="actions"><button class="download" id="downloadBtn">Download Result</button></div>
+<div class="another"><button class="primary" onclick="resetAll()">Detect Another</button></div>
+</section>
+
+<div class="loading" id="loading"><div class="track"><div class="bar"></div></div><b>loading...</b></div>
+</main>
+
+<script>
+const input=document.querySelector('#folderInput'),drop=document.querySelector('#dropzone'),summary=document.querySelector('#summary'),detect=document.querySelector('#detectBtn'),loading=document.querySelector('#loading'),grid=document.querySelector('#grid'),results=document.querySelector('#results'),msg=document.querySelector('#msg');
+let files=[],latest={};
+const ok=f=>['image/jpeg','image/png','image/bmp','image/webp'].includes(f.type)||/\.(jpe?g|png|bmp|webp)$/i.test(f.name);
+
+function useFiles(list){
+  files=[...list].filter(ok);
+  summary.style.display='block';
+  if(!files.length){summary.textContent='No supported images found.';detect.disabled=true;return}
+  summary.textContent=`${files.length} image${files.length===1?'':'s'} selected`;
+  document.querySelector('#dropTitle').textContent='Folder selected';
+  document.querySelector('#dropSub').textContent='Click again to choose a different folder';
+  detect.disabled=false;msg.textContent='';
+}
+drop.onclick=()=>input.click();
+input.onchange=e=>useFiles(e.target.files);
+['dragenter','dragover'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.add('drag')}));
+['dragleave','drop'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.remove('drag')}));
+drop.addEventListener('drop',e=>{if(e.dataTransfer.files.length)useFiles(e.dataTransfer.files)});
+
+detect.onclick=async()=>{
+  if(!files.length)return;
+  loading.classList.add('show');detect.disabled=true;msg.textContent='';
+  const form=new FormData(); files.forEach(f=>form.append('images',f,f.webkitRelativePath||f.name));
+  try{
+    const r=await fetch('/api/detect',{method:'POST',body:form});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();latest=d.results||d;
+    localStorage.setItem('recentAiDetection',JSON.stringify(latest));
+    render(latest);
+  }catch(e){
+    msg.textContent='Frontend is ready, but /api/detect is not connected yet. Connect this HTML page to your Python backend to run the model.';
+    console.error(e);
+  }finally{loading.classList.remove('show');detect.disabled=files.length===0}
+};
+
+function render(data){
+  grid.innerHTML='';
+  Object.entries(data).forEach(([filename,r],i)=>{
+    const label=String(r.predicted_class??r.class??r.label??'').toUpperCase();
+    const isAI=label==='AI'||Number(r.predicted_class_id)===1;
+    let c=Number(r.confidence_score??r.confidence??0);
+    const pct=Number.isFinite(c)?(c*(c<=1?100:1)).toFixed(2)+'%':'—';
+    const el=document.createElement('div');el.className='row';
+    el.innerHTML=`<div class="info"><div class="name">Image ${String(i+1).padStart(3,'0')} · ${esc(filename)}</div><div class="conf">Confidence: ${pct}</div></div><div class="verdict ${isAI?'ai':'real'}">${isAI?'Detected as AI':'Detected as Real'}</div>`;
+    grid.appendChild(el);
+  });
+  results.classList.add('show');results.scrollIntoView({behavior:'smooth'});
+}
+
+document.querySelector('#downloadBtn').onclick=()=>{
+  if(!Object.keys(latest).length)return;
+  const b=new Blob([JSON.stringify(latest,null,4)],{type:'application/json'});
+  const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='predictions.json';a.click();URL.revokeObjectURL(u);
+};
+function recent(){document.querySelector('#recentTab').classList.add('active');document.querySelector('#newTab').classList.remove('active');const d=localStorage.getItem('recentAiDetection');if(d){latest=JSON.parse(d);render(latest)}else{summary.style.display='block';summary.textContent='No recent results yet.'}}
+function newUpload(){document.querySelector('#newTab').classList.add('active');document.querySelector('#recentTab').classList.remove('active')}
+function resetAll(){input.value='';files=[];latest={};detect.disabled=true;summary.style.display='none';grid.innerHTML='';results.classList.remove('show');document.querySelector('#dropTitle').textContent='Click to browse or';document.querySelector('#dropSub').textContent='drag and drop your folder/files';document.querySelector('#upload').scrollIntoView({behavior:'smooth'})}
+function home(){document.querySelector('#home').scrollIntoView({behavior:'smooth'})}
+function esc(s){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+</script>
+</body>
+</html>
