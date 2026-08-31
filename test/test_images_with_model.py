@@ -24,7 +24,7 @@ def run_inference(image_folder, output_json):
     # 3. Load your trained model
     model.load_state_dict(
         torch.load(
-            r"C:\Users\r7lia\Downloads\Robust AI Image Detector\test\resnet18_1000perclass_20epochs_combinedataset_with_50_transform.pth",
+            r"\resnet18_1000perclass_20epochs_combinedataset_with_50_transform.pth",
             map_location=device
         )
     )
@@ -119,6 +119,6 @@ def run_inference(image_folder, output_json):
 if __name__ == "__main__":
 
     run_inference(
-        image_folder=r"C:\Users\r7lia\Downloads\Robust AI Image Detector\test\images",
-        output_json=r"C:\Users\r7lia\Downloads\Robust AI Image Detector\test\predictions.json"
+        image_folder=r"\Robust AI Image Detector\test\images",
+        output_json=r"\Robust AI Image Detector\test\predictions.json"
     )
