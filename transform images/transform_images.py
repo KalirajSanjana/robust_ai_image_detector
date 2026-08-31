@@ -56,8 +56,8 @@ def center_crop(image, crop_ratio=0.8):
 
 def apply_random_transform(image):
 
-    if random.random() < 0.5:
-        return image
+    # if random.random() < 0.5:
+    #     return image
 
     transform_type = random.choice([
         "jpeg",

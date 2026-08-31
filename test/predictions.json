@@ -1,0 +1,32 @@
+{
+    "fake_2.jpg": {
+        "predicted_class_id": 1,
+        "predicted_class": "AI",
+        "confidence_score": 1.0
+    },
+    "fake_3.webp": {
+        "predicted_class_id": 0,
+        "predicted_class": "REAL",
+        "confidence_score": 0.922482430934906
+    },
+    "image.jpg": {
+        "predicted_class_id": 1,
+        "predicted_class": "AI",
+        "confidence_score": 0.9998492002487183
+    },
+    "real_1.jpg": {
+        "predicted_class_id": 1,
+        "predicted_class": "AI",
+        "confidence_score": 0.996204674243927
+    },
+    "real_2.jpg": {
+        "predicted_class_id": 1,
+        "predicted_class": "AI",
+        "confidence_score": 0.7781132459640503
+    },
+    "real_3.jpg": {
+        "predicted_class_id": 1,
+        "predicted_class": "AI",
+        "confidence_score": 0.9269370436668396
+    }
+}
